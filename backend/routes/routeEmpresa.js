@@ -4,7 +4,7 @@ const Empresas = require("../database/models/empresa");
 const isAuthenticated = require("../auth");
 const jwt = require("jsonwebtoken");
 
-const secretKey = "uzumymu333";
+const secretKey = process.env.SECRET_KEY;
 
 route.post("/", async (req, res) => {
 
