@@ -1,6 +1,7 @@
 const express = require("express");
 const route = express.Router();
 const Vagas = require("../database/models/vagas");
+const isAuthenticated = require("../auth");
 
 route.get("/", async (req, res) => {
 
@@ -37,7 +38,7 @@ route.get('/:id', async (req, res) => {
 
 });
 
-route.post("/", async (req, res) => {
+route.post("/", isAuthenticated,async (req, res) => {
 
     try {
 
@@ -56,7 +57,7 @@ route.post("/", async (req, res) => {
 
 });
 
-route.put('/:id', async (req, res) => {
+route.put('/:id', isAuthenticated,async (req, res) => {
     
     try {
     
@@ -74,7 +75,7 @@ route.put('/:id', async (req, res) => {
 
 });
 
-route.delete('/:id', async (req, res) => {
+route.delete('/:id', isAuthenticated, async (req, res) => {
     
     try {
 

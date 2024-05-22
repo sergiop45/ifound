@@ -1,6 +1,10 @@
 const express = require("express");
 const route = express.Router();
 const Empresas = require("../database/models/empresa");
+const isAuthenticated = require("../auth");
+const jwt = require("jsonwebtoken");
+
+const secretKey = "uzumymu333";
 
 route.post("/", async (req, res) => {
 
@@ -34,7 +38,10 @@ route.post('/login', async (req, res) => {
           return res.status(500).json({ error: err.message });
         }
         if (isMatch) {
-          res.status(200).json({ message: 'Autenticação bem-sucedida' });
+
+          const token = jwt.sign({ userId: empresa._id, username: empresa.email_login }, secretKey, { expiresIn: "1h"});
+          res.json(token);
+        
         } else {
           res.status(400).json({ message: 'Senha incorreta' });
         }
@@ -43,6 +50,33 @@ route.post('/login', async (req, res) => {
       res.status(500).json({ error: err.message });
     }
   });
+
+route.get("/", isAuthenticated, async (req, res) => {
+
+  try {
+
+    const empresas = await Empresas.find();
+    res.status(200).json(empresas);
+
+  }
+
+  catch (err) {
+
+    res.status(500).json({message: err.message});
+
+  }
+
+})
   
+// Rota de logout
+route.post('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.status(500).send('Erro ao fazer logout.');
+    }
+    res.send('Logout bem-sucedido!');
+  });
+});
+
 
 module.exports = route;
