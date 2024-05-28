@@ -52,6 +52,20 @@ empresaModel.pre("save", async function(next) {
 
 });
 
+empresaModel.pre('findOneAndUpdate', async function(next) {
+    const update = this.getUpdate();
+    if (update.senha) {
+      try {
+        const salt = await bcrypt.genSalt(10);
+        update.senha = await bcrypt.hash(update.senha, salt);
+        this.setUpdate(update);
+      } catch (err) {
+        return next(err);
+      }
+    }
+    next();
+  });
+
 empresaModel.methods.comparePassword = function (senha, cb) {
     bcrypt.compare(senha, this.senha, (err, isMatch) => {
       if (err) return cb(err);

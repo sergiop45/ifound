@@ -24,6 +24,55 @@ route.post("/", async (req, res) => {
 
 });
 
+route.put("/:id", isAuthenticated, async (req, res) => {
+
+    if(req.params.id != req.user.userId) {
+
+      res.status(401).json({message: "Usuario não autorizado!"});
+
+    } else {
+
+      try {
+
+        const updatedEmpresa = await Empresas.findByIdAndUpdate(req.params.id, req.body, {new: true});
+        if(!updatedEmpresa) res.status(404).json("Empresa não encontrada!");
+        res.status(200).json(updatedEmpresa);
+
+      } 
+      catch (err) {
+
+        res.status(500).json({message: err.message});
+
+      }
+
+    }
+
+});
+
+route.delete("/:id", isAuthenticated, async (req, res) => {
+
+  if(req.params.id != req.user.userId) {
+    res.status(401).json({message: "Usuario não autorizado!"});
+  } else {
+
+    try {
+
+      const deletedEmpresa = await Empresas.findByIdAndDelete(req.params.id);
+      if (!deletedEmpresa) res.status(404).json({message: "Empresa não encontrada!"});
+      res.status(200).json(deletedEmpresa);
+
+    }
+
+    catch (err) {
+
+      res.status(500).json({erro: err.message});
+
+    }
+  }
+
+
+});
+
 route.post('/login', async (req, res) => {
     const { email_login, senha } = req.body;
   
@@ -54,7 +103,7 @@ route.post('/login', async (req, res) => {
 route.get("/", isAuthenticated, async (req, res) => {
 
   try {
-
+    
     const empresas = await Empresas.find();
     res.status(200).json(empresas);
 
@@ -70,12 +119,9 @@ route.get("/", isAuthenticated, async (req, res) => {
   
 // Rota de logout
 route.post('/logout', (req, res) => {
-  req.session.destroy(err => {
-    if (err) {
-      return res.status(500).send('Erro ao fazer logout.');
-    }
+    req.user == {};
     res.send('Logout bem-sucedido!');
-  });
+  
 });
 
 

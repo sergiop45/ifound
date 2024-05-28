@@ -7,6 +7,8 @@ const routeEmpresas = require("./routes/routeEmpresa");
 require("dotenv").config();
 
 const port = process.env.PORT || 3000;
+const user = process.env.USER_DB;
+const pass = process.env.PASS_DB;
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
